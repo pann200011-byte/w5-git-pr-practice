@@ -16,7 +16,7 @@
 
     <div id="chat-box">
       <div class="message bot">
-        嗨！這週我們要學 Pull Request 🔀 試著修改我，然後開一個 PR 吧！
+        <span class="text">嗨！這週我們要學 Pull Request 🔀 試著修改我，然後開一個 PR 吧！</span>
       </div>
     </div>
 
@@ -34,26 +34,60 @@
 
       if (!text) return;
 
+      // User Message
       const userDiv = document.createElement('div');
       userDiv.className = 'message user';
+      
+      const textSpan = document.createElement('span');
+      textSpan.className = 'text';
+      textSpan.textContent = text;
+      
       const timeUser = document.createElement('span');
       timeUser.className = 'timestamp';
       timeUser.textContent = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
-      userDiv.textContent = text;
+      
+      userDiv.appendChild(textSpan);
       userDiv.appendChild(timeUser);
       chatBox.appendChild(userDiv);
 
+      // Bot Message
       const botDiv = document.createElement('div');
       botDiv.className = 'message bot';
+      
+      const textSpanBot = document.createElement('span');
+      textSpanBot.className = 'text';
+      textSpanBot.textContent = `你說了「${text}」！`;
+      
       const timeBot = document.createElement('span');
       timeBot.className = 'timestamp';
       timeBot.textContent = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
-      botDiv.textContent = `你說了「${text}」！`;
+      
+      botDiv.appendChild(textSpanBot);
       botDiv.appendChild(timeBot);
       chatBox.appendChild(botDiv);
 
       input.value = '';
       chatBox.scrollTop = chatBox.scrollHeight;
+      
+      // Clear search when sending a new message
+      document.getElementById('search-input').value = '';
+      searchMessages('');
+    }
+
+    function searchMessages(query) {
+      const messages = document.querySelectorAll('.message');
+      const q = query.toLowerCase();
+
+      messages.forEach(msg => {
+        const textElement = msg.querySelector('.text');
+        const text = textElement ? textElement.textContent : msg.textContent;
+        
+        if (text.toLowerCase().includes(q)) {
+          msg.classList.remove('hidden');
+        } else {
+          msg.classList.add('hidden');
+        }
+      });
     }
 
     document.getElementById('user-input').addEventListener('keypress', function(e) {
